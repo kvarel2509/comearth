@@ -5,3 +5,4 @@ class Pattern(models.Model):
     string = models.TextField('Исходная строка')
     prepared = models.JSONField('Заготовка')
     count_variable = models.IntegerField('Количество переменных')
+    lst_variable = models.JSONField('Список переменных')
