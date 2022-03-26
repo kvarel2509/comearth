@@ -1,22 +1,25 @@
-from rest_framework import serializers
-from .models import Pattern
 import re
+
+from rest_framework import serializers
+
+from .models import Pattern
+
+PATTERN1 = r'(\${\w+})'
+PATTERN2 = r'(\${(\w+)})'
 
 
 class PatternSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Pattern
         fields = ['pk', 'string', 'lst_variable']
         read_only_fields = ['lst_variable']
 
     def get_data(self, string):
-        pattern = r'(\${(\w+)})'
-        prepared = re.split(pattern, string)
+        prepared = re.split(PATTERN1, string)
         count_variable = 0
         lst_variable = []
         for i in prepared:
-            match = re.fullmatch(pattern, i)
+            match = re.fullmatch(PATTERN2, i)
             if match and match[2] not in lst_variable:
                 count_variable += 1
                 lst_variable.append(match[2])
@@ -38,3 +41,7 @@ class PatternSerializer(serializers.ModelSerializer):
             instance.lst_variable = lst_variable
             instance.save()
         return instance
+
+
+class GenerateSerializer(serializers.Serializer):
+    data = serializers.HStoreField(child=serializers.CharField())
